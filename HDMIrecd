@@ -1,0 +1,173 @@
+#!/bin/sh
+#__author__ = "Ka Hache a.k.a. The One & Only Javi"
+#__version__ = "1.0.0"
+#__start_date__ = "April 2015"
+#__end_date__ = "08/06/2015"
+#__maintainer__ = "me"
+#__email__ = "little_kh@hotmail.com.com"
+#__requirements__ = "bmdcapture (included in Decklink SDK), ffmpeg"
+#__status__ = "In production"
+#__description__ = "This one is the daemon that will launch several recording instances"
+
+#Variables definition
+MY_PID=$$
+LOCK_FILE=/var/run/HDMIrecd.lock
+LOG_FILE=/var/log/HDMIrecd.log
+RECORD_BUCLE=/home/user/config/HDMIrecorder.sh
+INPUT_LIST=/home/user/config/HDMIinputs.txt
+
+# Die function
+die(){
+        MESSAGE=$1
+        log "Action failed. Reason: $MESSAGE"
+        rm -f $LOCK_FILE
+        exit 1
+}
+
+#Logging function
+log(){
+        MESSAGE=$1
+        echo "$MESSAGE"
+        echo "HDMIrecd($MY_PID) [`date`]: $MESSAGE" >> $LOG_FILE
+}
+# Checks before running
+check_running(){
+        # first check that there is no other HDMIrecd script still running and waiting for the HDMIrecorder.sh
+        if [ -e $LOCK_FILE ]; then
+                LOCK_PID=`cat $LOCK_FILE`
+                	if [ "$LOCK_PID" -ne "$MY_PID" ]; then
+            			IS_RUNNING=`ps $LOCK_PID | grep -c HDMIrecd`;
+            			if [ $IS_RUNNING -eq 0 ]; then
+                			log "Another process (or none) is running with this PID, removing lockfile"
+                			rm -f $LOCK_FILE
+            			else
+                			log "Another HDMIrecd script is running, exiting!"
+                			exit 1
+            			fi
+                	fi
+        fi
+        echo $MY_PID > $LOCK_FILE
+
+        INSTANCES=`ps ax | grep HDMIrecorder.sh | grep -v grep | wc -l`
+        log "Got $INSTANCES instances of HDMIrecorder.sh running"
+        return $INSTANCES
+
+	}
+
+check_files_exist(){ #crashes if puppet hasn't copied the script and the input config
+        if [ ! -x $RECORD_BUCLE ];
+                then die "HDMIrecorder.sh script not found!!"
+        	fi
+        if [ ! -e $INPUT_LIST ];
+                then die "HDMIinputs.txt not found!!"
+        	fi
+	}	
+
+
+
+check_num_of_inputs(){ #logs if there aren't inputs copied
+        NUMBER_OF_INPUTS=`cat $INPUT_LIST | wc -l`;
+        if [ $NUMBER_OF_INPUTS -eq 0 ]; then
+                log "No inputs defined in HDMIinputs.txt!!"
+                mv -f $INPUT_LIST $INPUT_LIST.bak
+                rm -f $LOCK_FILE
+                exit 0
+        	fi
+	}	
+
+#Checks launcher!
+checks(){ 
+        check_running
+        check_files_exist
+        check_num_of_inputs
+        return $?
+}
+
+#service status
+status_of_HDMIrecd(){
+        check_num_of_inputs
+        INSTANCES=`ps ax | grep HDMIrecorder.sh | grep -v grep | wc -l`
+        if [ $INSTANCES -ne 0 ] ; then 
+		log "HDMIrecd is actually running"
+		exit 0
+	fi
+        if [ $INSTANCES -eq 0 ] ; then 
+		log "HDMIrecd is not running"
+		exit 1
+	fi
+}
+
+#killing function
+check_and_stop(){ 
+        INSTANCES=`ps ax | grep HDMIrecorder.sh | grep -v grep | wc -l`
+        if [ $INSTANCES -eq 0 ] ; then 
+		log "HDMIrecd is not running, you don't need to stop it"
+	fi
+        FINSTANCES=`ps ax | grep HDMIrecorder.sh | grep -v grep | wc -l`
+        if [ $FINSTANCES -ne 0 ] ; then
+           ps ax | grep HDMIrecorder.sh | grep -v grep | awk '{print $1}' | xargs kill -9
+           ps ax | grep bmdcapture | grep -v grep | awk '{print $1}' | xargs kill -9
+	   ps ax | grep ffmpeg | grep -v grep | awk '{print $1}' | xargs kill
+           sleep 0.5
+           while [ `ps ax | grep ffmpeg | grep -v grep | wc -l` -ne 0 ] ; do
+              ps ax | grep ffmpeg | grep -v grep | awk '{print $1}' | xargs kill -9
+              sleep 0.5
+           done
+        fi
+}
+
+
+#here launches the start-stop-restart-status options from the service itself
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
+
+case "$1" in
+  start)
+        checks
+        if [ $? -ne 0 ]; then die "HDMIrecd is actually running"; fi
+        log "Starting HDMI recording module ..."
+        su - user -c $RECORD_BUCLE &
+        while true; do
+                check_running
+                RET=$?
+                log "RET: $RET"
+                NUMBER_INSTANCES=`ps ax | grep HDMIrecorder.sh | grep -v grep | wc -l`
+                log "in while-true: Got $NUMBER_INSTANCES instances of HDMIrecorder.sh running"
+                if [ $RET -ne 0 ]; then break; fi
+                sleep 1
+ 	       done
+        rm -f $LOCK_FILE
+        exit 0
+        ;;
+  stop)
+        log "Stopping HDMI recording module"
+        check_and_stop
+        exit 0
+        ;;
+
+  restart)
+        log "Stopping BMAT HDMI recording module"
+        check_and_stop
+        checks
+        if [ $? -ne 0 ]; then die "HDMIrecd could not restart because it has not properly stopped"; fi
+        log "Starting HDMI recording module ..."
+        su - user -c $RECORD_BUCLE &
+        while true; do
+                check_running
+                if [ $? -ne 0 ]; then break; fi
+                sleep 1
+        done
+        rm -f $LOCK_FILE
+        exit 0
+        ;;
+
+  status)
+        status_of_HDMIrecd
+        ;;
+
+  *)
+        log "Usage: /etc/init.d/HDMIrecd {start|stop|restart|status}"
+        exit 1
+esac
+
+exit 0
