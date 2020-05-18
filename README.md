@@ -81,4 +81,9 @@ I recommend each 5 minutes if you don't want to lose video recordings<br />
 **recscheck_ignore.txt**<br />
 Simple file to add the inputs you don't want to check on detectandrestart.sh
 <br /><br />
+***In order to make it work, it's very simple:<br />
+1) Config the input/output file
+2) Copy the files in the given folders inside the code. Check permissions!
+3) Add a line like "service HDMIrecd start" in /etc/rc.local or just run it whenever you want***
+<br /><br />
 Special s/out to my team mates at that era, without them all this shouldn't be possible
