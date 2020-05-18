@@ -59,11 +59,17 @@ $5 = input keyname / name of the files
 $6 = ftp user
 $7 = format type (output): aac, mp4, etc...
 ```
-**HDMIrecd**
+**HDMIrecd**<br />
 This is the Recording daemon. It should be inside /etc/init.d/ with the correct permissions.<br />
-**detectandrestart.sh**
+**HDMIrecorder.sh** <br />
+This is the recording bucle which will be launched in several instances (one for each card).
+You can modify the trailing options from FFMpeg as you want.
+Just keep in mind the basic idea that the higher quality you record, it's gonna take more resources from server<br />
+**detectandrestart.sh**<br />
 This file should be inside cron. 
 You can customize how much often do you want it to be launched, 
 I recommend each 5 minutes if you don't want to lose video recordings<br />
-**HDMIrecorder.sh** This is the recording bucle. You can modify the trailing options from FFMpeg as you want.
-Just keep in mind the basic idea that the higher quality you record, it's gonna take more resources from server<br />
+**recscheck_ignore.txt**<br />
+Simple file to add the inputs you don't want to check on detectandrestart.sh
+<br /><br />
+Special s/out to my team mates at that era, without them all this shouldn't be possible
