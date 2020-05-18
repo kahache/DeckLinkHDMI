@@ -26,13 +26,16 @@ Here you'll find some files:<br />
 
 **HDMIinputs.txt**
 Here you add the input/output configuration for each video card. 
-It should be something like:<br />
-"1:2:3:4:5:6:7"<br />
-"0:7:2:3:example-channel-01:testHDMI:mp4"<br />
-so the output of the files will be something like<br />
-example-channel-01_testHDMI_20150601_080000.mp4<br />
-example-channel-01_testHDMI_20150601_090000.mp4<br />
+It should be named like:<br />
+```
+"1:2:3:4:5:6:7"
+An example given
+"0:7:2:3:example-channel-01:testHDMI:mp4"
+so the output of the files will be named like
+example-channel-01_testHDMI_20150601_080000.mp4
+example-channel-01_testHDMI_20150601_090000.mp4
 etc...<br />
+```
 And here it's what each field stands for:<br />
 ```
 $1 = device number
