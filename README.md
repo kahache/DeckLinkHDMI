@@ -24,12 +24,13 @@ You can put it in the same folder or move it to /usr/bin (then change script)
 
 Here you'll find some files:<br />
 
-**HDMIinputs.txt ->**
+**HDMIinputs.txt**
 Here you add the configuration for each video card. It should be something like:<br />
 "0:7:2:3:example-channel-01:testHDMI:mp4"<br />
 And here it's what each field stands for:<br />
+```
 $1 = device number<br />
-$2 = Video mode:<br />
+ $2 = Video mode:<br />
     0: NTSC 720 x 486 29.97 FPS
     1: NTSC 23.98 720 x 486 23.976 FPS
     2: PAL 720 x 576 25 FPS
@@ -48,24 +49,22 @@ $2 = Video mode:<br />
     15: HD 720p 60 1280 x 720 60 FPS
 $3 = Audio Input:
     1: Analog (RCA)
-    2: Embedded audio (HDMI/SDI) -> this should be default
+    2: Embedded audio (HDMI/SDI) (this should be default)
 $4 = Video Input:
     1: Composite
     2: Component
-    3: HDMI -> this should be default
+    3: HDMI (this should be default)
     4: SDI
-# $5 = input keyname / name of the files
-# $6 = ftp user
-# $7 = format type:
-#    aac
-#    mp4
-#    etc...
-##########################################################
-
+$5 = input keyname / name of the files
+$6 = ftp user
+$7 = format type (output): aac, mp4, etc...
 <br />
-HDMIrecd -> This is the Recording daemon. It should be inside /etc/init.d/ with the correct permissions.<br />
-detectandrestart.sh -> This file should be inside cron. 
+```
+**HDMIrecd**
+This is the Recording daemon. It should be inside /etc/init.d/ with the correct permissions.<br />
+**detectandrestart.sh**
+This file should be inside cron. 
 You can customize how much often do you want it to be launched, 
 I recommend each 5 minutes if you don't want to lose video recordings<br />
-HDMIrecorder.sh -> This is the recording bucle. You can modify the trailing options from FFMpeg as you want.
+**HDMIrecorder.sh** This is the recording bucle. You can modify the trailing options from FFMpeg as you want.
 Just keep in mind the basic idea that the higher quality you record, it's gonna take more resources from server<br />
