@@ -19,7 +19,7 @@ However, it was working with HDD in ext3<br />
 **Software**<br />
 ·Download DeckLink's Linux SDK (https://www.blackmagicdesign.com/developer/product/capture-and-playback)<br />
 When you download it, there are some Linux examples and one is an executable file called "bmdcapture".<br />
-You can put it in the same folder or move it to /usr/bin (then change script)
+You can put it in the same folder or move it to /usr/bin (then change script)<br />
 ·Compile last FFMpeg version (https://ffmpeg.org). You can use avconv from Ubuntu but in that case you should change script too
 
 Here you'll find some files:<br />
