@@ -29,8 +29,8 @@ Here you add the configuration for each video card. It should be something like:
 "0:7:2:3:example-channel-01:testHDMI:mp4"<br />
 And here it's what each field stands for:<br />
 ```
-$1 = device number<br />
- $2 = Video mode:<br />
+$1 = device number
+$2 = Video mode:
     0: NTSC 720 x 486 29.97 FPS
     1: NTSC 23.98 720 x 486 23.976 FPS
     2: PAL 720 x 576 25 FPS
@@ -58,7 +58,6 @@ $4 = Video Input:
 $5 = input keyname / name of the files
 $6 = ftp user
 $7 = format type (output): aac, mp4, etc...
-<br />
 ```
 **HDMIrecd**
 This is the Recording daemon. It should be inside /etc/init.d/ with the correct permissions.<br />
