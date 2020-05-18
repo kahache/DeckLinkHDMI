@@ -25,8 +25,14 @@ You can put it in the same folder or move it to /usr/bin (then change script)
 Here you'll find some files:<br />
 
 **HDMIinputs.txt**
-Here you add the configuration for each video card. It should be something like:<br />
+Here you add the input/output configuration for each video card. 
+It should be something like:<br />
+"1:2:3:4:5:6:7"<br />
 "0:7:2:3:example-channel-01:testHDMI:mp4"<br />
+so the output of the files will be something like<br />
+example-channel-01_testHDMI_20150601_080000.mp4<br />
+example-channel-01_testHDMI_20150601_090000.mp4<br />
+etc...<br />
 And here it's what each field stands for:<br />
 ```
 $1 = device number
@@ -55,8 +61,8 @@ $4 = Video Input:
     2: Component
     3: HDMI (this should be default)
     4: SDI
-$5 = input keyname / name of the files
-$6 = ftp user
+$5 = output keyname / name of the files
+$6 = extra info in the name
 $7 = format type (output): aac, mp4, etc...
 ```
 **HDMIrecd**<br />
